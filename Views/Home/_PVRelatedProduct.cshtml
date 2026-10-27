@@ -1,0 +1,26 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.ProductDetailsVM
+
+<link href="~/Content/myStyle/CustomerHome.css" rel="stylesheet" type="text/css" />
+
+@* Hiển thị danh sách sản phẩm liên quan *@
+@if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+{
+    <section class="feature-product">
+        <div class="container-fluid feature-pro">
+            <h2 class="product-title" style="font-weight: bold;">Các sản phẩm tương tự</h2>
+            <ul class="product-list">
+                @foreach (var product in Model.RelatedProducts)
+                {
+                    <li class="product-item">
+                        <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                            <img class="product-image" src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                            <div class="prod-name">@Html.DisplayFor(modelItem => product.ProductName)</div>
+                            <div class="prod-price">@product.ProductPrice.ToString("N0") đ</div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+}
+

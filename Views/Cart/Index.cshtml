@@ -1,0 +1,128 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.Cart
+
+@{
+    ViewBag.Title = "Giỏ hàng nâng cao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .cart-container {
+        margin: 20px auto;
+        max-width: 1200px;
+    }
+
+    .shopping-cart {
+        border: 1px solid #ddd;
+        padding: 20px;
+        background-color: #fff;
+    }
+
+    .cart-header {
+        border-bottom: 20px solid #f5f5f5;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .cart-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+</style>
+
+<div class="cart-container">
+    <div class="shopping-cart">
+        <div class="cart-header">
+            <h2>Giỏ hàng của bạn</h2>
+        </div>
+
+        @if (Model == null || !Model.Items.Any())
+        {
+            <p class="alert alert-info">Giỏ hàng trống.</p>
+        }
+        else
+        {
+            // Sửa triệt để chữ f viết thường ở đây
+            foreach (var categoryGroup in Model.GroupedItems)
+            {
+                <div class="category-section" style="margin-top: 20px;">
+                    <h3 class="text-primary" style="border-bottom: 2px solid #337ab7; padding-bottom: 5px;">
+                        Danh mục: @categoryGroup.Key
+                    </h3>
+
+                    @foreach (var item in categoryGroup)
+                    {
+                        <div class="row cart-item" style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div class="col-md-2">
+                                <img src="@item.ProductImage" alt="@item.ProductName" class="img-responsive" style="max-height: 80px; object-fit: contain;" />
+                            </div>
+                            <div class="col-md-4">
+                                <h4>@item.ProductName</h4>
+                                <p class="text-muted">Đơn giá: <span class="text-danger">@item.UnitPrice.ToString("N0") đ</span></p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group" style="width: 130px;">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" onclick="updateCartQuantity(@item.ProductID, @item.Quantity - 1)">-</button>
+                                    </span>
+                                    <input type="text" class="form-control text-center" value="@item.Quantity" readonly />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" onclick="updateCartQuantity(@item.ProductID, @item.Quantity + 1)">+</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-right">
+                                <h5>Thành tiền:</h5>
+                                <strong class="text-danger">@item.TotalPrice.ToString("N0") đ</strong>
+                            </div>
+                            <div class="col-md-1 text-center">
+                                <a href="@Url.Action("RemoveFromCart", "Cart", new { id = item.ProductID })" class="btn btn-danger btn-sm" onclick="return confirm('Xóa sản phẩm này?');">
+                                    <span class="glyphicon glyphicon-trash"></span> Xóa
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="row" style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+                <div class="col-md-6">
+                    <a href="@Url.Action("ClearCart", "Cart")" class="btn btn-warning" onclick="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?');">Xóa tất cả</a>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-default">Tiếp tục mua sắm</a>
+                </div>
+                <div class="col-md-6 text-right">
+                    <h3>Tổng tiền: <span class="text-danger">@Model.TotalValue().ToString("N0") đ</span></h3>
+                    <button class="btn btn-success btn-lg">Tiến hành đặt hàng</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="similar-products-section" style="margin-top: 40px;">
+        @Html.Partial("_PVSimilarProduct", Model)
+    </div>
+</div>
+
+<script type="text/javascript">
+    function updateCartQuantity(productId, newQuantity) {
+        if (newQuantity < 0) return;
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "@Url.Action("UpdateQuantity", "Cart")");
+
+        var idInput = document.createElement("input");
+        idInput.setAttribute("type", "hidden");
+        idInput.setAttribute("name", "id");
+        idInput.setAttribute("value", productId);
+        form.appendChild(idInput);
+
+        var quantityInput = document.createElement("input");
+        quantityInput.setAttribute("type", "hidden");
+        quantityInput.setAttribute("name", "quantity");
+        quantityInput.setAttribute("value", newQuantity);
+        form.appendChild(quantityInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>

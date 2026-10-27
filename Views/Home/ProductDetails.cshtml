@@ -1,0 +1,74 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.ProductDetailsVM
+@{
+    ViewBag.Title = "ProductDetails";
+    Layout = "~/Views/Shared/_LayoutContent.cshtml";
+}
+
+<link href="~/Content/myStyle/CustomerDetailProduct.css" rel="stylesheet" type="text/css" />
+
+<div class="container-fluid backend">
+    <div class="form-horizontal">
+
+        <!-- Khối 1: Thông tin sản phẩm -->
+        <div class="row row-pro-section">
+            <div class="col-md-5 pro-section-img">
+                <img src="@Url.Content(Model.product.ProductImage)" class="img-responsive" alt="@Model.product.ProductName" />
+            </div>
+
+            <div class="col-md-7 pro-section">
+                <h3>@Html.DisplayFor(model => model.product.ProductName)</h3>
+                <p class="pro-sale">Số lượt mua: @Model.product.OrderDetails.Count()</p>
+                <p class="pro-price">Giá bán: @Model.product.ProductPrice.ToString("N0") đ</p>
+                <p><strong>Loại sản phẩm:</strong> @Model.product.Category.CategoryName</p>
+                <br />
+                <p><strong>Mô tả sản phẩm:</strong></p>
+                <p class="text-muted">@Model.product.ProductDescription</p>
+            </div>
+        </div>
+
+        <!-- Khối 2: Sản phẩm liên quan -->
+        <div class="row">
+            @Html.Partial("_PVRelatedProduct", Model)
+        </div>
+
+        <!-- Khối 3: Tính giá trị tạm tính -->
+        <div class="row row-pro-section">
+            <p><strong>Thông tin mua hàng (Tính giá trị tạm tính)</strong></p>
+
+            @using (Html.BeginForm("ProductDetails", "Home", FormMethod.Get))
+            {
+                @Html.HiddenFor(model => model.product.ProductID)
+
+                <div class="form-group">
+                    @Html.Label("Số lượng", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.quantity, new { @class = "form-control", type = "number", min = "1" })
+                        <button type="submit" class="btn btn-info" style="margin-top: 5px;">Tạm tính</button>
+                    </div>
+                </div>
+            }
+
+            <div class="form-group">
+                @Html.Label("Thành tiền (tạm tính)", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10" style="padding-top: 7px;">
+                    <span class="pro-price">@Model.estimatedValue.ToString("N0") đ</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    @Html.ActionLink("Thêm vào giỏ hàng", "AddToCart", "Cart",
+                             new { id = Model.product.ProductID, quantity = Model.quantity },
+                             new { @class = "btn btn-danger" })
+                </div>
+            </div>
+        </div>
+
+        <!-- Khối 4: Sản phẩm bán chạy -->
+        <div class="row">
+            @Html.Partial("_PVTopProduct", Model)
+        </div>
+
+    </div>
+</div>
+

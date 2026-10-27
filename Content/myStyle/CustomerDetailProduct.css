@@ -1,0 +1,38 @@
+﻿/* ==========================================================================
+   STYLE CHO TRANG CHI TIẾT SẢN PHẨM KHÁCH HÀNG (CUSTOMER DETAIL PRODUCT)
+   ========================================================================== */
+
+/* Định dạng chung cho vùng nội dung chi tiết */
+.pro-section {
+    padding: 10px 10px;
+    background-color: ghostwhite;
+}
+
+/* Định dạng đường viền bao quanh toàn khối sản phẩm */
+.row-pro-section {
+    border: 1px groove #ffffff;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+}
+
+/* Định dạng khung chứa ảnh sản phẩm bên trái */
+.pro-section-img {
+    max-height: 250px;
+    max-width: 200px;
+    margin: 10px;
+    padding: 10px;
+}
+
+/* Định dạng màu sắc và cỡ chữ cho giá tiền sản phẩm */
+.pro-price {
+    color: red;
+    font-weight: bolder;
+    font-size: larger;
+    margin: 10px;
+}
+
+/* Định dạng cho phần thông tin số lượt mua / giảm giá */
+.pro-sale {
+    font-weight: lighter;
+}

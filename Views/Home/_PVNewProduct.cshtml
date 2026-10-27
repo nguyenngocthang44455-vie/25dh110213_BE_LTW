@@ -1,0 +1,27 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.HomeProductVM
+@using PagedList.Mvc
+
+<div class="new-product">
+    <h2 class="product-title">SẢN PHẨM MỚI NHẤT</h2>
+
+    <ul class="product-list">
+        @foreach (var item in Model.NewProducts)
+        {
+            <li class="product-item">
+                <span class="prod-badge">New</span>
+                <a href="@Url.Action("Details", "Products", new { id = item.ProductID })">
+                    <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" class="product-image" />
+                    <div class="prod-name">@item.ProductName</div>
+                    <div class="prod-price">@string.Format("{0:N0} đ", item.ProductPrice)</div>
+                </a>
+            </li>
+        }
+    </ul>
+
+    <!-- Điều hướng phân trang điều khiển bởi PagedList -->
+    <div class="pagination-container">
+        <div class="pagination-links">
+            @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
+        </div>
+    </div>
+</div>

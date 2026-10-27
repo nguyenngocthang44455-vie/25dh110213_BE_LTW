@@ -1,0 +1,39 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.HomeProductVM
+@{
+    ViewBag.Title = "Customer Home Page";
+}
+
+@* Nhúng file style riêng cho trang chủ khách hàng *@
+<link href="~/Content/myStyle/CustomerHome.css" rel="stylesheet" type="text/css" />
+
+<!-- Khối BANNER kết hợp ô TÌM KIẾM SẢN PHẨM -->
+<section class="banner">
+    <div class="banner-container">
+        <div class="banner-content">
+            <h1>Chào mừng đến với cửa hàng của chúng tôi!</h1>
+            <p>Nơi cung cấp trải nghiệm mua sắm sản phẩm đa dạng và chất lượng</p>
+        </div>
+
+        @* Form gửi từ khóa tìm kiếm về Action Index của HomeController *@
+        <div class="search-container">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { @class = "form-inline" }))
+            {
+                <div class="form-group row-search-container">
+                    @Html.TextBox("searchTerm", Model.SearchTerm, new { @class = "search-input", placeholder = "Nhập tên, mô tả hoặc loại sản phẩm..." })
+                    <button type="submit" class="search-button">Tìm kiếm</button>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Khối danh sách SẢN PHẨM NỔI BẬT và SẢN PHẨM MỚI -->
+<div class="container-fluid backend">
+    @* Gọi tham chiếu đến 2 partial view theo thứ tự xuất hiện *@
+
+    <!-- 1. Hiển thị danh sách sản phẩm nổi bật -->
+    @Html.Partial("_PVFeatureProduct", Model)
+
+    <!-- 2. Hiển thị danh sách sản phẩm mới (có kèm phân trang) -->
+    @Html.Partial("_PVNewProduct", Model)
+</div>
