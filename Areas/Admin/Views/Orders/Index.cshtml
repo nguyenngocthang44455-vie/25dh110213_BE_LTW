@@ -1,0 +1,32 @@
+@model IEnumerable<_25dh110213_BE_LTW.Models.Order>
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>DANH SÁCH ĐƠN HÀNG HỆ THỐNG</h2>
+<hr />
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr class="warning">
+            <th class="text-center">Mã đơn hàng</th>
+            <th>Khách hàng</th>
+            <th>Ngày đặt hàng</th>
+            <th>Phương thức thanh toán</th>
+            <th class="text-center">Trạng thái</th>
+            <th class="text-right">Tổng giá trị</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td class="text-center" style="font-weight: bold;">#@item.OrderID</td>
+            <td>@(item.Customer != null ? item.Customer.CustomerName : "N/A")</td>
+            <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+            <td>@item.PaymentMethod</td>
+            <td class="text-center"><span class="label label-info">@item.PaymentStatus</span></td>
+            <td class="text-right" style="font-weight: bold; color: #d32f2f;">@item.TotalAmount.ToString("N0") đ</td>
+        </tr>
+        }
+    </tbody>
+</table>

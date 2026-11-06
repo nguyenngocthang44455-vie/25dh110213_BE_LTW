@@ -1,0 +1,153 @@
+﻿@using _25dh110213_BE_LTW.Models.ViewModel
+@{
+    // 1. Lấy thông tin giỏ hàng từ Session (Slide 53 dòng 1-2)
+    var cart = Session["Cart"] as List<_25dh110213_BE_LTW.Models.ViewModel.CartItem>;
+
+    // 2. Tạo đối tượng ViewBag.pmmodel dạng PersonalMenuVM và lưu trong ViewBag (Slide 53 dòng 5-10)
+    ViewBag.pmmodel = new PersonalMenuVM
+    {
+        IsLoggedIn = User.Identity.IsAuthenticated,
+        Username = User.Identity.IsAuthenticated ? User.Identity.Name : string.Empty
+    };
+
+    // 3. Nếu giỏ hàng không rỗng thì gán số lượng mặt hàng trong giỏ cho CartCount (Slide 53 dòng 11-14)
+    if (cart != null && cart.Any())
+    {
+        ViewBag.pmmodel.CartCount = cart.Sum(item => item.Quantity);
+    }
+    else
+    {
+        ViewBag.pmmodel.CartCount = 0;
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My Store</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <!-- ĐÃ SỬA: Sửa lại đường link CDN của FontAwesome để hiển thị icon ngôi nhà, tài khoản, giỏ hàng -->
+    <link rel="stylesheet" href="https://cloudflare.com" />
+
+    <style>
+        /* CSS cho menu Dropdown của mục Tài khoản theo cấu trúc slide 53 */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <!-- Thanh banner quảng cáo màu xanh trên cùng của Fastor (Slide 51, 54) -->
+        <header class="container" style="background-color:lightgreen;">
+            <h4 style="text-align:center; color:green; font-size:15px; margin: 5px 0;">
+                Free ship đơn từ 40k, giảm nhiều hơn cùng <span style="font-weight:bolder; font-style:italic;"><span style="color:blue;">FREE</span>SHIP</span> XTRA
+            </h4>
+        </header>
+
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- ĐÃ SỬA: Chuyển logo từ thẻ img bị vỡ sang định dạng chữ viết (Text) có style CSS đẹp mắt -->
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand" style="font-weight: bold; font-size: 22px; color: #333; text-decoration: none; padding-top: 15px;">
+                    FASTOR
+                </a>
+            </div>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- ĐÂY LÀ DÒNG ĐƯỢC CHÈN VÀO: Gọi hàm CategoryMenu để hiển thị danh mục sản phẩm -->
+                    @Html.Action("CategoryMenu", "Home")
+
+                    <!-- Mục 1: Link điều hướng về Trang chủ (Slide 54, 55 dòng 85-90) -->
+                    <li class="dropdown">
+                        <div style="position:relative; padding: 15px 10px;">
+                            <i class="fas fa-home"></i>
+                            @Html.ActionLink("Trang chủ", "Index", "Home")
+                        </div>
+                    </li>
+
+                    <!-- Mục 2: Khối Dropdown Tài khoản xử lý động dựa theo trạng thái đăng nhập (Slide 54, 55 dòng 91-118) -->
+                    <li class="dropdown">
+                        <div style="position:relative; padding: 15px 10px;">
+                            <i class="fas fa-user"></i>
+                            <a href="javascript:void(0)" id="account-name" style="text-decoration:none; color:#555;">
+                                @if (ViewBag.pmmodel.IsLoggedIn)
+                                {
+                                <text>Hello, </text>@ViewBag.pmmodel.Username
+                                }
+                                else
+                                {
+                                <text>Tài khoản</text>
+                                }
+                            </a>
+                        </div>
+                        <div class="dropdown-content">
+                            @if (ViewBag.pmmodel.IsLoggedIn)
+                            {
+                            <a href="@Url.Action("ProfileInfo", "Account")">Thông tin tài khoản</a>
+                            <a href="@Url.Action("MyOrder", "Order")">Lịch sử mua hàng</a>
+                            <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                            }
+                            else
+                            {
+                            <a href="@Url.Action("Register", "Account")">Đăng ký</a>
+                            <a href="@Url.Action("Login", "Account")">Đăng nhập</a>
+                            }
+                        </div>
+                    </li>
+
+                    <!-- Mục 3: Icon hiển thị Giỏ hàng kèm số lượng CartCount (Slide 54, 55 dòng 119-126) -->
+                    <li class="dropdown">
+                        <div style="padding: 15px 10px;">
+                            <a href="@Url.Action("Index", "Cart")" style="text-decoration:none; color:#555;">
+                                <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                                (<span id="cart-count">@ViewBag.pmmodel.CartCount</span>)
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content" style="margin-top: 100px;">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My Store - FASTOR Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

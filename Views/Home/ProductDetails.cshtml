@@ -1,0 +1,85 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.ProductDetailsVM
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = Model.product.ProductName;
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container" style="margin-top: 30px; margin-bottom: 30px;">
+    <div class="row">
+        <!-- 1. KHỐI BÊN TRÁI: HIỂN THỊ ẢNH SẢN PHẨM -->
+        <div class="col-md-4 text-center">
+            <div class="thumbnail" style="padding: 20px; border-radius: 8px; border: 1px solid #ebebf0;">
+                <img src="@Url.Content(Model.product.ProductImage)" style="max-height: 350px; max-width: 100%; object-fit: contain;" alt="@Model.product.ProductName" />
+            </div>
+        </div>
+
+        <!-- 2. KHỐI Ở GIỮA: THÔNG TIN CHI TIẾT SẢN PHẨM -->
+        <div class="col-md-5">
+            <h2 style="font-size: 22px; font-weight: bold; color: #333; margin-top: 0; line-height: 30px;">
+                @Model.product.ProductName
+            </h2>
+            <p style="color: #858585; font-size: 14px;">
+                Đã bán: <span style="font-weight: bold; color: #333;">@Model.product.OrderDetails.Count()</span>
+            </p>
+            <h3 style="color: #fe3834; font-weight: bold; font-size: 26px; margin-top: 15px; margin-bottom: 15px;">
+                @Model.product.ProductPrice.ToString("N0") VNĐ
+            </h3>
+            <p style="font-size: 14px; color: #555;">
+                <strong>Danh mục:</strong> @Model.product.Category.CategoryName
+            </p>
+            <hr />
+
+            <h4><strong>Mô tả sản phẩm:</strong></h4>
+            <p style="line-height: 24px; color: #4a4a4a; text-align: justify; white-space: pre-line;">
+                @Model.product.ProductDescription
+            </p>
+        </div>
+
+        <!-- 3. KHỐI BÊN PHẢI: FORM CHỌN SỐ LƯỢNG VÀ TẠM TÍNH -->
+        <div class="col-md-3">
+            <div class="panel panel-default" style="border-radius: 8px; border: 1px solid #ebebf0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div class="panel-body" style="padding: 20px;">
+                    <h4 style="font-weight: bold; margin-top: 0; margin-bottom: 15px;">Số lượng mua</h4>
+
+                    @using (Html.BeginForm("ProductDetails", "Home", FormMethod.Get, new { id = "form-quantity" }))
+                    {
+                    <input type="hidden" name="id" value="@Model.product.ProductID" />
+                    <input type="number" name="quantity" class="form-control text-center" value="@Model.quantity" min="1" style="font-size: 16px; font-weight: bold; margin-bottom: 20px;" onchange="document.getElementById('form-quantity').submit();" />
+                    }
+
+                    <h4 style="font-weight: bold; margin-bottom: 5px;">Tạm tính:</h4>
+                    <p style="font-size: 20px; font-weight: bold; color: #fe3834; margin-bottom: 25px;">
+                        @Model.estimatedValue.ToString("N0") VNĐ
+                    </p>
+
+                    <!-- Nút Thêm vào giỏ hàng điều hướng sang CartController -->
+                    <a href="@Url.Action("AddToCart", "Cart", new { id = Model.product.ProductID, quantity = Model.quantity })" class="btn btn-danger btn-lg" style="width: 100%; font-weight: bold; background-color: #ff424e; border: none; border-radius: 4px;">
+                        Thêm vào giỏ hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. KHỐI SẢN PHẨM TƯƠNG TỰ (LIÊN QUAN) PHÍA DƯỚI -->
+    <div class="row" style="margin-top: 50px;">
+        <div class="col-md-12">
+            <h3 style="font-weight: bold; color: #333; border-left: 4px solid #189eff; padding-left: 10px; margin-bottom: 20px;">
+                SẢN PHẨM TƯƠNG TỰ
+            </h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                @foreach (var related in Model.RelatedProducts)
+                {
+                <div style="width: 155px; border: 1px solid #eee; padding: 10px; border-radius: 4px; text-align: center;">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = related.ProductID })">
+                        <img src="@Url.Content(related.ProductImage)" style="height: 120px; max-width: 100%; object-fit: contain; margin-bottom: 8px;" />
+                        <p style="font-size: 12px; height: 36px; overflow: hidden; color: #333; margin-bottom: 5px; font-weight: 500;">@related.ProductName</p>
+                        <p style="font-size: 13px; font-weight: bold; color: #fe3834; margin-bottom: 0;">@related.ProductPrice.ToString("N0") đ</p>
+                    </a>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

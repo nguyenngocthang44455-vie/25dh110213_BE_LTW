@@ -1,0 +1,40 @@
+﻿@model _25dh110213_BE_LTW.Models.Order
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    Layout = File.Exists(Server.MapPath("~/Views/Shared/_CustomerLayout.cshtml")) ? "~/Views/Shared/_CustomerLayout.cshtml" : "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="margin-top: 50px; margin-bottom: 50px; max-width: 700px;">
+    <!-- Khối hộp thông báo lớn -->
+    <div class="well text-center" style="background-color: #ffffff; border-radius: 8px; padding: 40px; border: 1px solid #e5e5e5; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+        <!-- Icon dấu tích xanh lá cây thành công -->
+        <div style="font-size: 60px; color: #248a3d; margin-bottom: 20px;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+
+        <h2 style="font-weight: bold; color: #333; margin-bottom: 15px;">ĐẶT HÀNG THÀNH CÔNG!</h2>
+
+        <p style="font-size: 16px; color: #555; line-height: 26px; margin-bottom: 30px;">
+            Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi. <br />
+            Đơn hàng <strong style="color: #0b74e5;">#@Model.OrderID</strong> đã được tiếp nhận trên hệ thống,
+            <span style="font-weight: 500;">vui lòng chờ</span> nhân viên gọi điện xác nhận và giao hàng đến bạn.
+        </p>
+
+        <!-- Bảng tóm tắt thông tin nhanh -->
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 6px; text-align: left; margin-bottom: 35px; font-size: 14px; border: 1px solid #eee;">
+            <p style="margin-bottom: 8px;"><strong>Mã đơn hàng:</strong> <span style="color: #0b74e5; font-weight: bold;">#@Model.OrderID</span></p>
+            <p style="margin-bottom: 8px;"><strong>Ngày đặt hàng:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+            <p style="margin-bottom: 8px;"><strong>Địa chỉ giao tới:</strong> @Model.ShippingAddress</p>
+            <p style="margin-bottom: 8px;"><strong>Hình thức thanh toán:</strong> @Model.PaymentMethod</p>
+            <p style="margin-bottom: 0;"><strong>Tổng tiền phải trả:</strong> <strong style="color: #fe3834; font-size: 16px;">@Model.TotalAmount.ToString("N0") đ</strong></p>
+        </div>
+
+        <!-- Nút bấm quay lại trang chủ điều hướng -->
+        <div class="text-center">
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg" style="background-color: #0b74e5; font-weight: bold; padding: 12px 35px; border: none; border-radius: 4px;">
+                Quay lại trang chủ
+            </a>
+        </div>
+    </div>
+</div>
