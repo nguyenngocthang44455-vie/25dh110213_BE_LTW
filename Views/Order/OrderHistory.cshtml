@@ -1,0 +1,58 @@
+﻿@model IEnumerable<_25dh110213_BE_LTW.Models.Order>
+@{
+    ViewBag.Title = "Lịch sử mua hàng";
+    Layout = File.Exists(Server.MapPath("~/Views/Shared/_CustomerLayout.cshtml")) ? "~/Views/Shared/_CustomerLayout.cshtml" : "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="margin-top: 30px; margin-bottom: 40px;">
+    <h2 style="font-weight: bold; color: #333;">LỊCH SỬ MUA HÀNG</h2>
+    <hr />
+
+    @if (Model == null || !Model.Any())
+    {
+    <div class="alert alert-info text-center" style="padding: 25px;">
+        <p style="font-size: 15px; margin-bottom: 0;">Bạn chưa có đơn hàng nào trong lịch sử mua sắm.</p>
+    </div>
+    }
+    else
+    {
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr class="active">
+                    <th class="text-center" style="width: 120px;">Mã đơn hàng</th>
+                    <th>Ngày đặt hàng</th>
+                    <th>Địa chỉ nhận hàng</th>
+                    <th>Hình thức thanh toán</th>
+                    <th class="text-right">Tổng giá trị</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center" style="width: 130px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                    {
+                <tr>
+                    <td class="text-center" style="font-weight: bold; color: #0b74e5;">#@order.OrderID</td>
+                    <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@order.ShippingAddress</td>
+                    <td>@order.PaymentMethod</td>
+                    <td class="text-right" style="font-weight: bold; color: #fe3834;">
+                        @order.TotalAmount.ToString("N0") đ
+                    </td>
+                    <td class="text-center">
+                        <span class="label label-warning" style="font-size: 11px;">@order.PaymentStatus</span>
+                    </td>
+                    <td class="text-center">
+                        <!-- Nút dẫn về trang xem lại hóa đơn chi tiết đã làm ở bài BE 8 -->
+                        <a href="@Url.Action("OrderSuccess", "Order", new { id = order.OrderID })" class="btn btn-info btn-sm" style="font-weight: bold;">
+                            Xem chi tiết
+                        </a>
+                    </td>
+                </tr>
+                    }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

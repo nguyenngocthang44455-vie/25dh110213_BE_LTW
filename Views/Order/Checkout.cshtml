@@ -1,0 +1,96 @@
+﻿@model _25dh110213_BE_LTW.Models.ViewModel.CheckoutVM
+@{
+    ViewBag.Title = "Đặt hàng";
+    Layout = File.Exists(Server.MapPath("~/Views/Shared/_CustomerLayout.cshtml")) ? "~/Views/Shared/_CustomerLayout.cshtml" : "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    function enableAddressEdit() {
+        document.getElementById("shippingAddress").removeAttribute("readonly");
+        document.getElementById("newAddressGroup").style.display = "block";
+    }
+
+    function updateShippingAddress() {
+        var newAddress = document.getElementById("newShippingAddress").value;
+        if (newAddress) {
+            document.getElementById("shippingAddress").value = newAddress;
+        }
+    }
+</script>
+
+<div class="container" style="margin-top: 30px; margin-bottom: 40px;">
+    <h2 style="font-weight: bold; color: #333; margin-bottom: 25px;">ĐẶT HÀNG (THANH TOÁN)</h2>
+
+    @using (Html.BeginForm("Checkout", "Order", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <!-- Khối bên trái: Lựa chọn hình thức -->
+            <div class="col-md-8">
+                <div class="well" style="background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; font-size: 18px; font-weight: bold; color: #0b74e5;">Chọn hình thức giao hàng</h3>
+                    <hr style="margin-top: 5px;" />
+                    <div class="form-group" style="padding-left: 20px;">
+                        <!-- ĐÃ FIX: Thêm required bắt buộc tích chọn -->
+                        @Html.RadioButtonFor(m => m.ShippingMethod, "Giao hàng nhanh", new { @required = "required" }) <strong style="color: #fe3834;">NOW</strong> Giao hàng nhanh <br />
+                        @Html.RadioButtonFor(m => m.ShippingMethod, "Giao hàng tiết kiệm", new { @required = "required" }) Giao hàng tiết kiệm
+                        @Html.ValidationMessageFor(m => m.ShippingMethod, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="well" style="background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e5e5e5;">
+                    <h3 style="margin-top: 0; font-size: 18px; font-weight: bold; color: #0b74e5;">Chọn hình thức thanh toán</h3>
+                    <hr style="margin-top: 5px;" />
+                    <div class="form-group" style="padding-left: 20px; line-height: 28px;">
+                        <!-- ĐÃ FIX: Thêm required bắt buộc chọn hình thức tiền mặt/paypal -->
+                        @Html.RadioButtonFor(m => m.PaymentMethod, "Tiền mặt", new { @required = "required" }) Thanh toán tiền mặt <br />
+                        @Html.RadioButtonFor(m => m.PaymentMethod, "Paypal", new { @required = "required" }) Ví điện tử PayPal
+                        @Html.ValidationMessageFor(m => m.PaymentMethod, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối bên phải: Địa chỉ và Tóm tắt đơn hàng -->
+            <div class="col-md-4">
+                <div class="well" style="background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0; font-weight: bold;">Giao tới</h4>
+                    <hr style="margin-top: 5px; margin-bottom: 15px;" />
+
+                    <div class="form-group" style="margin: 0;">
+                        @Html.TextBoxFor(m => m.ShippingAddress, new { @class = "form-control", @readonly = "readonly", @id = "shippingAddress", style = "background-color: #f9f9f9; font-weight: 500;" })
+                        <button type="button" class="btn btn-link btn-sm" onclick="enableAddressEdit()" style="padding-left: 0; font-weight: bold;">Thay đổi địa chỉ nhận hàng</button>
+                    </div>
+
+                    <div class="form-group" id="newAddressGroup" style="display:none; margin: 10px 0 0 0;">
+                        <label style="font-size: 12px; color: #666;">Nhập địa chỉ giao hàng mới:</label>
+                        <input type="text" id="newShippingAddress" class="form-control" placeholder="Số nhà, tên đường, phường/xã..." />
+                    </div>
+                </div>
+
+                <div class="well" style="background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e5e5e5;">
+                    <h4 style="margin-top: 0; font-weight: bold;">Thông tin đơn hàng</h4>
+                    <hr style="margin-top: 5px;" />
+
+                    <table class="table" style="font-size: 13px;">
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <tr>
+                                <td>@item.ProductName <br /><span class="text-primary" style="font-weight: 500;">Số lượng: @item.Quantity cái</span></td>
+                                <td class="text-right" style="vertical-align: middle; font-weight: bold;">@item.TotalPrice.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </table>
+                    <hr />
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <span style="font-size: 15px; font-weight: bold;">Tổng tiền:</span>
+                        <span style="font-size: 20px; font-weight: bold; color: #fe3834;">@Model.TotalAmount.ToString("N0") đ</span>
+                        @Html.HiddenFor(m => m.TotalAmount)
+                    </div>
+
+                    <input type="submit" value="Đặt hàng" class="btn btn-danger btn-block btn-lg" style="background-color: #ff424e; font-weight: bold; border: none;" onclick="updateShippingAddress()" />
+                </div>
+            </div>
+        </div>
+    }
+</div>

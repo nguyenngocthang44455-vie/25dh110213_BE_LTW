@@ -1,0 +1,195 @@
+﻿@model IEnumerable<_25dh110213_BE_LTW.Models.Order>
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+
+    string currentStatus = ViewBag.CurrentStatus ?? "Tất cả";
+}
+
+<style>
+    .tiki-tabs {
+        display: flex;
+        border-bottom: 2px solid #f4f4f4;
+        margin-bottom: 20px;
+        padding-left: 0;
+        list-style: none;
+    }
+
+        .tiki-tabs li {
+            margin-right: 10px;
+        }
+
+            .tiki-tabs li a {
+                display: block;
+                padding: 12px 20px;
+                text-decoration: none;
+                color: #64646d;
+                font-size: 14px;
+                border-bottom: 2px solid transparent;
+                margin-bottom: -2px;
+            }
+
+            .tiki-tabs li.active a {
+                color: #0b74e5;
+                font-weight: bold;
+                border-bottom: 2px solid #0b74e5;
+            }
+
+    .order-card {
+        border: 1px solid #ebebf0;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        padding: 15px;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f2f2f2;
+        margin-bottom: 12px;
+    }
+
+    .order-status {
+        color: #00ab55;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        color: #f0ad4e !important; /* Màu cam cho chờ duyệt */
+    }
+
+    .status-shipping {
+        color: #5bc0de !important; /* Màu xanh nước biển cho đang giao hàng */
+    }
+
+    .status-cancelled {
+        color: #fe3834 !important; /* Màu đỏ cho đã hủy */
+    }
+
+    .product-item {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .product-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        margin-right: 15px;
+    }
+
+    .product-info {
+        flex-grow: 1;
+    }
+</style>
+
+<div class="container" style="margin-top: 30px; margin-bottom: 30px;">
+    <!-- 1. CÁC TAB LỌC TRẠNG THÁI QUY TRÌNH CHUẨN MUA SẮM -->
+    <ul class="tiki-tabs">
+        <li class="@(currentStatus == "Tất cả" ? "active" : "")">
+            <a href="@Url.Action("MyOrder", "Order", new { status = "Tất cả", searchTerm = ViewBag.CurrentSearch })">Tất cả đơn</a>
+        </li>
+        <li class="@(currentStatus == "Chờ duyệt" ? "active" : "")">
+            <a href="@Url.Action("MyOrder", "Order", new { status = "Chờ duyệt", searchTerm = ViewBag.CurrentSearch })">Chờ duyệt</a>
+        </li>
+        <li class="@(currentStatus == "Đã thanh toán" ? "active" : "")">
+            <a href="@Url.Action("MyOrder", "Order", new { status = "Đã thanh toán", searchTerm = ViewBag.CurrentSearch })">Đã thanh toán</a>
+        </li>
+        <li class="@(currentStatus == "Đang giao hàng" ? "active" : "")">
+            <a href="@Url.Action("MyOrder", "Order", new { status = "Đang giao hàng", searchTerm = ViewBag.CurrentSearch })">Đang giao hàng</a>
+        </li>
+        <li class="@(currentStatus == "Đã giao hàng" ? "active" : "")">
+            <a href="@Url.Action("MyOrder", "Order", new { status = "Đã giao hàng", searchTerm = ViewBag.CurrentSearch })">Đã giao hàng</a>
+        </li>
+        <li class="@(currentStatus == "Đã hủy" ? "active" : "")">
+            <a href="@Url.Action("MyOrder", "Order", new { status = "Đã hủy", searchTerm = ViewBag.CurrentSearch })">Đã hủy</a>
+        </li>
+    </ul>
+
+    <!-- 2. THANH TÌM KIẾM ĐƠN HÀNG -->
+    @using (Html.BeginForm("MyOrder", "Order", FormMethod.Get, new { @class = "form-inline", style = "margin-bottom: 25px;" }))
+    {
+        <input type="hidden" name="status" value="@currentStatus" />
+        <div class="form-group" style="width: 85%;">
+            <input type="text" name="searchTerm" class="form-control" style="width: 100%;" placeholder="Tìm đơn hàng theo Mã đơn hàng hoặc Tên sản phẩm" value="@ViewBag.CurrentSearch" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 13%; background-color: #0b74e5;">Tìm đơn hàng</button>
+    }
+
+    <!-- 3. DANH SÁCH ĐƠN HÀNG CHI TIẾT -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center" style="padding: 40px; background-color: #fff; border-radius: 4px;">
+            <p style="font-size: 15px; color: #858585;">Không tìm thấy đơn hàng nào phù hợp với bộ lọc.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var order in Model)
+        {
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <span style="font-weight: bold; font-size: 15px;">Mã đơn hàng: #@order.OrderID</span>
+                        <span style="color: #858585; margin-left: 15px;">Ngày đặt: @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    <div class="order-status @(order.PaymentStatus == "Đã hủy" ? "status-cancelled" : (order.PaymentStatus == "Chờ duyệt" ? "status-pending" : (order.PaymentStatus == "Đang giao hàng" ? "status-shipping" : "")))">
+                        @order.PaymentStatus
+                    </div>
+                </div>
+
+                <div class="order-body">
+                    @foreach (var detail in order.OrderDetails)
+                    {
+                        <div class="product-item">
+                            <img src="@detail.Product.ProductImage" class="product-img" alt="Product Image" />
+                            <div class="product-info">
+                                <h4 style="margin-top: 0; font-size: 14px; font-weight: 500;">@detail.Product.ProductName</h4>
+                                <p style="color: #858585; font-size: 13px; margin-bottom: 0;">Số lượng: @detail.Quantity cái</p>
+
+                                <!-- ĐÃ FIX: Hiện ghi chú lý do/Hotline liên hệ nếu đơn hàng mang trạng thái Đã hủy -->
+                                @if (order.PaymentStatus == "Đã hủy")
+                                {
+                                    <p style="color: #fe3834; font-size: 12px; margin-top: 5px; font-weight: bold; margin-bottom: 0;">
+                                        <i class="fas fa-info-circle"></i> Lý do: Đơn hàng bị hủy. Vui lòng hệ hotline hệ thống: 1900.2323 để được xử lý hoàn tiền hoặc hỗ trợ.
+                                    </p>
+                                }
+                            </div>
+                            <div class="text-right" style="font-size: 14px; font-weight: bold;">
+                                @detail.UnitPrice.ToString("N0") đ
+                            </div>
+                        </div>
+                    }
+                </div>
+                <hr style="margin-top: 10px; margin-bottom: 15px;" />
+
+                <div class="row">
+                    <div class="col-md-6" style="font-size: 13px; color: #555; padding-top: 8px;">
+                        <strong>Hình thức:</strong> @order.PaymentMethod | <strong>Giao tới:</strong> @order.ShippingAddress
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <span style="font-size: 15px; margin-right: 15px;">Tổng tiền: <strong style="color: #fe3834; font-size: 18px;">@order.TotalAmount.ToString("N0") đ</strong></span>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-default btn-sm" style="border-color: #0b74e5; color: #0b74e5; font-weight: bold;">Mua lại</a>
+
+                        <a href="@Url.Action("OrderDetail", "Order", new { id = order.OrderID })" class="btn btn-primary btn-sm" style="background-color: #0b74e5; font-weight: bold; margin-left: 5px;">Xem chi tiết</a>
+
+                        <!-- ĐÃ FIX: Đảm bảo xóa bỏ sạch dòng chữ "Đã bảo mật thanh toán" gây phiền hà -->
+                        @if (order.PaymentStatus == "Chờ duyệt")
+                        {
+                            using (Html.BeginForm("CancelOrder", "Order", new { id = order.OrderID }, FormMethod.Post, new { style = "display:inline; margin-left: 5px;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm" style="font-weight: bold;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">Hủy đơn</button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

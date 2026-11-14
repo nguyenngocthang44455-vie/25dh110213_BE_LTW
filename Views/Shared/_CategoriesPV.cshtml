@@ -1,0 +1,9 @@
+﻿@model IEnumerable<_25dh110213_BE_LTW.Models.Category>
+
+@* ĐÃ XÓA BỎ TOÀN BỘ THẺ LI/UL VÀ TIÊU ĐỀ TRÙNG LẶP DƯ THỪA GÂY VỠ LAYOUT *@
+@foreach (var cat in Model)
+{
+    <a href="@Url.Action("ProductList", "Home", new { id = cat.CategoryID })">
+        @cat.CategoryName.ToLower()
+    </a>
+}

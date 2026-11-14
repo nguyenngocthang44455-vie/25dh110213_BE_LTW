@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My Store</title>
+
+    <!-- Nhúng các thư viện CSS chuẩn của Bootstrap và FontAwesome chính thức để hiện icon -->
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="https://cloudflare.com" />
+
+    <!-- Nhúng file CSS giao diện riêng của trang chủ khách hàng -->
+    <link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerHome.css" />
+
+    <style>
+        /* CSS căn chỉnh cho thanh thông báo và menu */
+        .top-banner-freeship {
+            background-color: lightgreen;
+            color: green;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 15px;
+            margin-bottom: 0;
+        }
+
+        .customer-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .customer-footer {
+            background-color: #f5f5f5;
+            padding: 20px 0;
+            margin-top: 40px;
+            border-top: 1px solid #e5e5e5;
+            color: #666;
+        }
+
+        .menu-personal-list {
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+            .menu-personal-list li {
+                margin-left: 20px;
+                position: relative;
+            }
+
+                .menu-personal-list li a {
+                    color: #333;
+                    text-decoration: none;
+                    font-size: 14px;
+                }
+        /* CSS cho Dropdown Menu Tài khoản */
+        .dropdown-account:hover .dropdown-account-content {
+            display: block;
+        }
+
+        .dropdown-account-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            padding: 5px 0;
+        }
+
+            .dropdown-account-content a {
+                display: block;
+                padding: 10px 15px;
+                color: #333;
+                text-decoration: none;
+            }
+
+                .dropdown-account-content a:hover {
+                    background-color: #f8f9fa;
+                    color: #0b74e5;
+                }
+    </style>
+</head>
+<body>
+    @{
+        var cart = Session["Cart"] as _25dh110213_BE_LTW.Models.ViewModel.Cart;
+        int cartCount = (cart != null && cart.Items != null) ? cart.Items.Sum(i => i.Quantity) : 0;
+    }
+
+    <!-- 1. PHẦN BANNER THÔNG BÁO FREESHIP TRÊN CÙNG -->
+    <div class="top-banner-freeship">
+        <strong>Free ship đơn từ 40k, giảm nhiều hơn cùng <span style="color: blue; font-style: italic;">FREESHIP XTRA</span></strong>
+    </div>
+
+    <!-- 2. PHẦN HEADER & THANH MENU CHÍNH -->
+    <header class="customer-header">
+        <div class="container">
+            <div class="row" style="display: flex; align-items: center;">
+                <!-- Logo thương hiệu -->
+                <div class="col-md-3">
+                    <a href="@Url.Action("Index", "Home")" style="font-size: 24px; font-weight: bold; color: #333; text-decoration: none; letter-spacing: 1px; display: inline-block;">
+                        FASTOR
+                    </a>
+                </div>
+
+                <!-- Ô điều hướng các chức năng cá nhân và giỏ hàng bên phải -->
+                <div class="col-md-9">
+                    <ul class="menu-personal-list nav navbar-nav navbar-right">
+                        @Html.Action("CategoryMenu", "Home")
+
+                        <li>
+                            <a href="@Url.Action("Index", "Home")"><i class="fas fa-home"></i> Trang chủ</a>
+                        </li>
+
+                        <!-- ĐÃ FIX: Nút Quản trị ẩn/hiện thông minh (Chỉ lộ ra khi tài khoản "admin" đăng nhập) -->
+                        @if (User.Identity.IsAuthenticated && User.Identity.Name.ToLower() == "admin")
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "AD", new { area = "Admin" })" style="color: #d9534f; font-weight: bold;">
+                                    <i class="fas fa-lock"></i> Quản trị
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Dropdown xử lý hiển thị theo trạng thái Đăng nhập -->
+                        <li class="dropdown-account">
+                            <a href="javascript:void(0)"><i class="fas fa-user"></i> Tài khoản <i class="fas fa-caret-down"></i></a>
+                            <div class="dropdown-account-content">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <a href="javascript:void(0)" style="font-weight:bold; color:#0b74e5; border-bottom:1px solid #eee;">Hi, @User.Identity.Name</a>
+                                    <a href="@Url.Action("ProfileInfo", "Account")">Thông tin tài khoản</a>
+                                    <a href="@Url.Action("MyOrder", "Order")">Đơn hàng của tôi</a>
+                                    <a href="@Url.Action("Logout", "Account")"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Register", "Account")">Đăng ký tài khoản</a>
+                                    <a href="@Url.Action("Login", "Account")">Đăng nhập tài khoản</a>
+                                }
+                            </div>
+                        </li>
+
+                        <!-- Icon hiển thị số lượng sản phẩm trong giỏ hàng -->
+                        <li>
+                            <a href="@Url.Action("Index", "Cart")" style="font-weight: bold;">
+                                <i class="fas fa-shopping-cart" style="color: #0b74e5; font-size: 16px;"></i> Giỏ hàng
+                                <span class="badge" style="background-color: #fe3834; color: white; font-size: 11px;">@cartCount</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. PHẦN THÂN TRANG ĐỘNG -->
+    <div class="container body-content" style="min-height: 500px; margin-top: 20px;">
+        @RenderBody()
+    </div>
+
+    <!-- 4. PHẦN FOOTER THÔNG TIN ĐỀ TÀI -->
+    <footer class="customer-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; @DateTime.Now.Year - Website Thương mại điện tử Fastor</p>
+                </div>
+                <div class="col-md-6 text-right">
+                    <p><strong>Đề tài:</strong> Phát triển ứng dụng Web BE | <strong>Thành viên nhóm</strong></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,99 @@
+@model IEnumerable<_25dh110213_BE_LTW.Models.Order>
+
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="font-weight: bold; color: #333; margin-bottom: 20px;">DANH SÁCH ĐƠN HÀNG HỆ THỐNG</h2>
+
+<table class="table table-bordered table-striped table-hover" style="vertical-align: middle;">
+    <thead>
+        <tr class="warning" style="font-weight: bold;">
+            <th class="text-center" style="vertical-align: middle;">Mã đơn hàng</th>
+            <th style="vertical-align: middle;">Khách hàng</th>
+            <th style="vertical-align: middle;">Ngày đặt hàng</th>
+            <th style="vertical-align: middle;">Phương thức thanh toán</th>
+            <th class="text-center" style="vertical-align: middle;">Trạng thái</th>
+            <th class="text-right" style="vertical-align: middle;">Tổng giá trị</th>
+            <th class="text-center" style="width: 240px; vertical-align: middle;">Hành động tác vụ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-center" style="font-weight: bold; vertical-align: middle;">#@item.OrderID</td>
+                <td style="vertical-align: middle;">@(item.Customer != null ? item.Customer.CustomerName : "N/A")</td>
+                <td style="vertical-align: middle;">@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                <td style="vertical-align: middle;">@(string.IsNullOrEmpty(item.PaymentMethod) ? "Tiền mặt" : item.PaymentMethod)</td>
+                <td class="text-center" style="vertical-align: middle;">
+                    @* Hiển thị màu sắc nhãn thông minh *@
+                    @if (item.PaymentStatus == "Chờ duyệt")
+                    {
+                        <span class="label label-warning" style="padding: 5px 8px; font-size: 11px;">Chờ duyệt</span>
+                    }
+                    else if (item.PaymentStatus == "Đang giao hàng")
+                    {
+                        <span class="label label-info" style="padding: 5px 8px; font-size: 11px;">Đang giao hàng</span>
+                    }
+                    else if (item.PaymentStatus == "Đã thanh toán")
+                    {
+                        <span class="label label-primary" style="padding: 5px 8px; font-size: 11px; background-color: #0b74e5;">Đã thanh toán</span>
+                    }
+                    else if (item.PaymentStatus == "Đã giao hàng")
+                    {
+                        <span class="label label-success" style="padding: 5px 8px; font-size: 11px;">Đã giao hàng</span>
+                    }
+                    else if (item.PaymentStatus == "Đã hủy")
+                    {
+                        <span class="label label-danger" style="padding: 5px 8px; font-size: 11px;">Đã hủy</span>
+                    }
+                    else
+                    {
+                        <span class="label label-default" style="padding: 5px 8px; font-size: 11px;">@item.PaymentStatus</span>
+                    }
+                </td>
+                <td class="text-right" style="font-weight: bold; color: #dd2f2f; vertical-align: middle;">@item.TotalAmount.ToString("#,0") đ</td>
+
+                <td class="text-center" style="vertical-align: middle;">
+                    @if (item.PaymentStatus == "Chờ duyệt")
+                    {
+                        using (Html.BeginForm("UpdateStatus", "Orders", new { id = item.OrderID, status = "Đã thanh toán" }, FormMethod.Post, new { style = "display:inline;" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-xs" style="font-weight: bold; padding: 4px 8px;">Duyệt đơn</button>
+                        }
+
+                        using (Html.BeginForm("UpdateStatus", "Orders", new { id = item.OrderID, status = "Đã hủy" }, FormMethod.Post, new { style = "display:inline; margin-left: 4px;" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-xs" style="font-weight: bold; padding: 4px 8px;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này hộ khách hàng không?')">Hủy đơn</button>
+                        }
+                    }
+                    else if (item.PaymentStatus == "Đã thanh toán")
+                    {
+                        using (Html.BeginForm("UpdateStatus", "Orders", new { id = item.OrderID, status = "Đang giao hàng" }, FormMethod.Post, new { style = "display:inline;" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-info btn-xs" style="font-weight: bold; padding: 4px 8px;">Giao hàng</button>
+                        }
+                    }
+                    else if (item.PaymentStatus == "Đang giao hàng")
+                    {
+                        // ĐÃ BỔ SUNG: Nút hoàn tất giao hàng chuyển trạng thái sang "Đã giao hàng"
+                        using (Html.BeginForm("UpdateStatus", "Orders", new { id = item.OrderID, status = "Đã giao hàng" }, FormMethod.Post, new { style = "display:inline;" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-xs" style="font-weight: bold; padding: 4px 8px; background-color: #248a3d; border-color: #248a3d;">Hoàn tất giao</button>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted" style="font-style: italic; font-size: 12px;">Không có tác vụ tiếp theo</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
