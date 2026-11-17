@@ -1,0 +1,40 @@
+﻿@model _25dh110213_BE_LTW.Models.Product
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="bg-success">CẬP NHẬT SẢN PHẨM</h2>
+
+@* 1. Thay đổi: Cấu hình nhận dữ liệu chỉnh sửa POST và hỗ trợ cập nhật file ảnh *@
+@using (Html.BeginForm("Edit", "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @* Giữ lại ID của sản phẩm đang sửa *@
+        @Html.HiddenFor(model => model.ProductID)
+
+        @* ĐÃ THÊM: Giữ lại giá trị đường dẫn hình ảnh hiện tại *@
+        @Html.HiddenFor(model => model.ProductImage)
+
+        @* 2. Thay đổi: Nhúng file Partial View chứa các ô nhập liệu chung *@
+        @Html.Partial("PVCreateEditProduct", Model)
+
+        @* Đồng bộ giao diện nút bấm sang tiếng Việt đẹp mắt *@
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

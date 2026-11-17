@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Trang quản trị";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- THẺ THỐNG KÊ TỔNG QUAN -->
+<div class="row" style="margin-top: 15px; margin-bottom: 25px;">
+    <div class="col-md-3 col-sm-6">
+        <div class="panel panel-primary text-center">
+            <div class="panel-heading" style="padding: 20px 10px;">
+                <h1 style="margin: 0; font-size: 38px; font-weight: bold;">@(ViewBag.TotalProducts ?? 0)</h1>
+                <p style="margin: 5px 0 0; font-size: 15px;">Sản phẩm</p>
+            </div>
+            <a href="@Url.Action("Index", "Products", new { area = "Admin" })" style="text-decoration: none;">
+                <div class="panel-footer" style="color: #337ab7;">
+                    Xem chi tiết <i class="glyphicon glyphicon-circle-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="panel panel-success text-center">
+            <div class="panel-heading" style="padding: 20px 10px;">
+                <h1 style="margin: 0; font-size: 38px; font-weight: bold;">@(ViewBag.TotalCategories ?? 0)</h1>
+                <p style="margin: 5px 0 0; font-size: 15px;">Danh mục</p>
+            </div>
+            <a href="@Url.Action("Index", "Categories", new { area = "Admin" })" style="text-decoration: none;">
+                <div class="panel-footer" style="color: #3c763d;">
+                    Xem chi tiết <i class="glyphicon glyphicon-circle-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="panel panel-info text-center">
+            <div class="panel-heading" style="padding: 20px 10px;">
+                <h1 style="margin: 0; font-size: 38px; font-weight: bold;">@(ViewBag.TotalOrders ?? 0)</h1>
+                <p style="margin: 5px 0 0; font-size: 15px;">Đơn hàng</p>
+            </div>
+            <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" style="text-decoration: none;">
+                <div class="panel-footer" style="color: #31708f;">
+                    Xem chi tiết <i class="glyphicon glyphicon-circle-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="panel panel-warning text-center">
+            <div class="panel-heading" style="padding: 20px 10px;">
+                <h1 style="margin: 0; font-size: 38px; font-weight: bold;">@(ViewBag.TotalCustomers ?? 0)</h1>
+                <p style="margin: 5px 0 0; font-size: 15px;">Khách hàng</p>
+            </div>
+            <a href="@Url.Action("Index", "Customers", new { area = "Admin" })" style="text-decoration: none;">
+                <div class="panel-footer" style="color: #8a6d3b;">
+                    Xem chi tiết <i class="glyphicon glyphicon-circle-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

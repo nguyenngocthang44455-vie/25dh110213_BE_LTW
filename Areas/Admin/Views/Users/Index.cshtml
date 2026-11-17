@@ -1,0 +1,33 @@
+@model IEnumerable<_25dh110213_BE_LTW.Models.User>
+@{
+    ViewBag.Title = "Quản lý tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>QUẢN LÝ TÀI KHOẢN HỆ THỐNG</h2>
+<hr />
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr class="active">
+            <th>Tên tài khoản</th>
+            <th>Vai trò hệ thống</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td style="font-weight: bold;">@item.Username</td>
+            <td>
+                @if (item.UserRole != null && item.UserRole.Trim().Equals("A", StringComparison.OrdinalIgnoreCase))
+                {
+                <span class="label label-danger">Admin</span>
+                }
+                else
+                {
+                <span class="label label-default">Khách hàng</span>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

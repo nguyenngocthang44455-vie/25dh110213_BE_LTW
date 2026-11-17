@@ -1,0 +1,59 @@
+﻿@model PagedList.IPagedList<_25dh110213_BE_LTW.Models.Product>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = ViewBag.CategoryName;
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml"; // Thay bằng _Layout.cshtml nếu bạn dùng file đó làm layout chính
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerHome.css" />
+
+<div class="container" style="margin-top: 30px; margin-bottom: 30px;">
+    <!-- Hiển thị tên danh mục động lên tiêu đề -->
+    <h2 class="text-center" style="color: #fe3834; font-weight: bold; text-transform: uppercase;">
+        DANH MỤC: @ViewBag.CategoryName
+    </h2>
+    <hr />
+
+    @if (Model == null || !Model.Any())
+    {
+    <div class="alert alert-warning text-center" style="padding: 30px;">
+        <p style="font-size: 16px; margin-bottom: 0;">Hiện tại chưa có sản phẩm nào thuộc danh mục này.</p>
+    </div>
+    }
+    else
+    {
+ <!-- Khối hiển thị lưới danh sách sản phẩm -->
+    <div class="row" style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+        @foreach (var product in Model)
+            {
+        <div class="col-md-3 col-sm-6" style="margin-bottom: 25px; display: flex;">
+            <div class="thumbnail text-center" style="padding: 15px; border-radius: 8px; border: 1px solid #ebebf0; width: 100%; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s;">
+                <div>
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        <img src="@Url.Content(product.ProductImage)" style="max-height: 180px; max-width: 100%; object-fit: contain; margin-bottom: 15px;" alt="@product.ProductName" />
+                    </a>
+                    <h4 style="font-size: 14px; font-weight: bold; line-height: 20px; height: 40px; overflow: hidden; color: #333; margin-bottom: 10px;">
+                        @product.ProductName
+                    </h4>
+                </div>
+                <div>
+                    <p style="font-size: 16px; font-weight: bold; color: #fe3834; margin-bottom: 15px;">
+                        @product.ProductPrice.ToString("N0") VNĐ
+                    </p>
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })" class="btn btn-sm btn-info" style="width: 100%; font-weight: bold; background-color: #189eff; border: none;">
+                        Xem chi tiết
+                    </a>
+                </div>
+            </div>
+        </div>
+            }
+    </div>
+
+ <!-- Khối hiển thị thanh chuyển trang (Phân trang) -->
+    <div class="text-center" style="margin-top: 20px;">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("ProductList", "Home", new { id = Request.RequestContext.RouteData.Values["id"], page }))
+        </div>
+    </div>
+    }
+</div>
